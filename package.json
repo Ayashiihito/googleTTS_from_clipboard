@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node ./index.js"
+  },
   "dependencies": {
     "@google-cloud/text-to-speech": "^3.2.6",
     "audio-buffer-from": "^1.1.1",
