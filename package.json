@@ -3,10 +3,6 @@
     "start": "node ./index.js"
   },
   "dependencies": {
-    "@google-cloud/text-to-speech": "^3.2.6",
-    "audio-buffer-from": "^1.1.1",
-    "audio-decode": "^1.4.0",
-    "audio-play": "^2.3.1",
     "axios": "^0.21.1",
     "clipboard-event": "^1.5.0",
     "clipboardy": "^2.3.0",
