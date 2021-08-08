@@ -16,26 +16,24 @@ if (!fs.existsSync(STORAGE_DIR)) {
 
 const getAudio = async text => {
   const time = Date.now()
-  console.info(`[${time}]\n${text} \n`);
+  const trimmed_text = text.replace('\x00', '');
+  console.info(`[${time}]\n${trimmed_text}`);
 
-  console.time('Time elapsed')
   let audio
   try {
-    audio = await axios.post(SERVER_URL, { text }, { responseType: 'arraybuffer' });
+    audio = await axios.post(SERVER_URL, { text: trimmed_text }, { responseType: 'arraybuffer' });
   } catch {
     console.log('Failed to attain audio from server');
   }
-  console.timeEnd('Time elapsed')
   if (audio) {
-    const returnedB64 = Buffer.from(audio.data).toString('base64');
-    const fileName = `${time}_${text.slice(0, 10)}.wav`
-    fs.writeFileSync(`${STORAGE_DIR}/${fileName}`, returnedB64, { encoding: 'base64' });
+    const fileName = `${time}_${trimmed_text.slice(0, 10)}.wav`
+    fs.writeFileSync(`${STORAGE_DIR}/${fileName}`, audio.data);
     spawn(PLAYER, [`./${STORAGE_DIR}/${fileName}`]);
   }
 }
 
 clipboardListener.startListening();
-clipboardListener.on('change', () => {
+clipboardListener.on('change', async () => {
   let text
   try {
     text = clipboard.readSync();
@@ -43,7 +41,11 @@ clipboardListener.on('change', () => {
     console.warn(`Couldn't read clipboard`);
   }
 
-  getAudio(text)
+  if (text) {
+    console.time('Time elapsed')
+    await getAudio(text)
+    console.timeEnd('Time elapsed')
+  }
 });
 
-console.info('Listening for clipboard change');
+console.info('Listening for clipboard changes');
